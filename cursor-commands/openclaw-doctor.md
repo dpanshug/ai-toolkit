@@ -63,9 +63,9 @@ fixed = False
 for req_id, req in list(pending.items()):
     device_id = req.get('deviceId', '')
     if device_id in paired and paired[device_id].get('publicKey') == req.get('publicKey') and req.get('isRepair'):
-        # Update platform if changed
-        if req.get('platform') and paired[device_id].get('platform') != req['platform']:
-            paired[device_id]['platform'] = req['platform']
+        # Remove platform field entirely to prevent flip-flop between host (darwin) and container (linux)
+        if 'platform' in paired[device_id]:
+            del paired[device_id]['platform']
         fixed = True
 
 if fixed:
@@ -73,7 +73,7 @@ if fixed:
         json.dump({}, f)
     with open(paired_path, 'w') as f:
         json.dump(paired, f, indent=2)
-    print('FIXED: Cleared stale pending request and updated paired device metadata.')
+    print('FIXED: Cleared stale pending request and removed platform field to prevent host/container flip-flop.')
 else:
     if pending:
         print('WARNING: Pending pairing request exists but does not look auto-fixable. Manual approval needed.')
@@ -148,7 +148,35 @@ If the proxy is missing from the network, restart it:
 cd ~/openclaw && docker compose up -d openclaw-claude-proxy
 ```
 
-## Step 7: Summary
+## Step 7: Google OAuth (gog) token health
+
+Verify gog can authenticate inside the container:
+
+```bash
+docker exec openclaw-openclaw-gateway-1 /bin/sh -c 'unset XDG_CONFIG_HOME; /home/node/.openclaw/bin/gog auth list'
+```
+
+Expected: shows `dipgupta@redhat.com` with `calendar,gmail` scopes. If it shows "No tokens stored" or errors:
+
+1. Check the volume mount exists: `docker inspect openclaw-openclaw-gateway-1 --format '{{range .Mounts}}{{.Source}} -> {{.Destination}}{{"\n"}}{{end}}' | grep gogcli`
+2. If mount is missing, ensure `docker-compose.override.yml` has the gogcli volume line and run `docker compose up -d`
+3. If mount exists but token expired, re-auth from host:
+
+```bash
+gog auth add dipgupta@redhat.com --services gmail,calendar --readonly --force-consent
+gog auth tokens export dipgupta@redhat.com --out ~/.openclaw/gogcli/token.json --overwrite
+docker exec -e XDG_CONFIG_HOME=/home/node/.openclaw -e GOG_KEYRING_PASSWORD=openclaw-local openclaw-openclaw-gateway-1 /home/node/.openclaw/bin/gog auth tokens import /home/node/.openclaw/gogcli/token.json
+```
+
+Then verify with a live call:
+
+```bash
+docker exec openclaw-openclaw-gateway-1 /bin/sh -c 'unset XDG_CONFIG_HOME; /home/node/.openclaw/bin/gog gmail messages list "in:inbox" --account dipgupta@redhat.com --limit 1'
+```
+
+If this returns mail, report OK. If it errors with 401/403, the token is expired and needs re-auth (instructions above).
+
+## Step 8: Summary
 
 Report a concise summary table:
 
