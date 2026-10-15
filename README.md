@@ -7,7 +7,7 @@ A personal collection of AI agent configurations, prompts, and automation tools 
 ```
 ai-toolkit/
 ├── cursor-commands/     # Cursor AI slash commands
-├── cursor-skills/       # Cursor AI agent skills
+├── skills/              # Cross-harness AI agent skills (OpenCode, Claude Code, Cursor)
 ├── openclaw/            # OpenClaw Docker setup docs
 └── ...                  # More to come
 ```
@@ -61,9 +61,9 @@ Full health check of the local OpenClaw Docker setup: containers, gateway, devic
 
 ---
 
-## 🤖 Cursor Skills
+## 🤖 Agent Skills
 
-Agent skills stored in `cursor-skills/`.
+Harness-agnostic agent skills stored in `skills/`. Each skill is a directory with a `SKILL.md` (frontmatter `name` + `description`) — the same format is read by OpenCode, Claude Code, and Cursor.
 
 ### Available Skills
 
@@ -71,6 +71,20 @@ Agent skills stored in `cursor-skills/`.
 |-------|-------------|
 | `jira-implement` | Jira-to-implementation orchestrator — takes a Jira URL or issue key and drives end-to-end implementation through PR creation and review handling |
 | `pr-description-write` | Drafts a review-ready PR/MR description from the branch diff — detects the repo's PR template and maps substance into it, or falls back to a minimal Why / What changed / Verification skeleton; never fabricates evidence |
+
+### Installation
+
+Symlink a skill into each harness's skills directory so the canonical copy stays in this repo:
+
+```bash
+SKILL=pr-description-write
+
+ln -sf ~/Documents/projects/ai-toolkit/skills/$SKILL ~/.agents/skills/   # OpenCode (reads ~/.agents/skills natively)
+ln -sf ~/Documents/projects/ai-toolkit/skills/$SKILL ~/.claude/skills/   # Claude Code
+ln -sf ~/Documents/projects/ai-toolkit/skills/$SKILL ~/.cursor/skills/   # Cursor
+```
+
+> **Note:** OpenCode also reads `~/.claude/skills` as a compatibility source, so a Claude Code symlink alone covers both.
 
 ---
 
