@@ -7,6 +7,7 @@ A personal collection of AI agent configurations, prompts, and automation tools 
 ```
 ai-toolkit/
 ├── cursor-commands/     # Cursor AI slash commands
+├── opencode-commands/   # OpenCode slash commands
 ├── skills/              # Cross-harness AI agent skills (OpenCode, Claude Code, Cursor)
 ├── openclaw/            # OpenClaw Docker setup docs
 └── ...                  # More to come
@@ -14,17 +15,32 @@ ai-toolkit/
 
 ---
 
-## 🎯 Cursor Commands
+## ⚡ Slash Commands
 
-Custom slash commands for [Cursor](https://cursor.sh) AI IDE.
+Slash commands are **not** cross-harness portable — each harness uses a different argument placeholder syntax, so per-harness variants live in separate directories:
+
+| Directory | Harness | Placeholder syntax | Install to |
+|-----------|---------|--------------------|------------|
+| `cursor-commands/` | Cursor | `${{VAR}}` | `~/.cursor/commands/` |
+| `opencode-commands/` | OpenCode | `$ARGUMENTS`, `$1`, `$2`… (1-based) | `~/.config/opencode/commands/` |
+
+The command set is mirrored across both directories — only the placeholder syntax and small harness-specific wording differ.
 
 ### Installation
 
-Symlink all commands to your Cursor commands directory:
-
 ```bash
+# Cursor
 ln -sf ~/Documents/projects/ai-toolkit/cursor-commands/*.md ~/.cursor/commands/
+
+# OpenCode
+ln -sf ~/Documents/projects/ai-toolkit/opencode-commands/*.md ~/.config/opencode/commands/
 ```
+
+### Portability notes
+
+- **Never symlink one command file across harnesses** (unlike skills). Argument placeholders differ — adapt the prompt body per variant.
+- **Claude Code is 0-based**: its `$1` is the *second* argument, while OpenCode's `$1` is the first. Don't copy OpenCode placeholders blindly if adding a `claude-commands/` variant.
+- **Prefer skills for new automation.** Skills are the portable cross-harness format (one canonical copy, symlinked everywhere, auto-discovered). Cursor deprecated `.cursor/commands` in 2026 in favor of skills, and Claude Code treats commands and skills as equivalent. Keep commands only when slash-invocation with positional arguments is genuinely needed.
 
 ### Available Commands
 
