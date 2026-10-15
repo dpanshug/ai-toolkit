@@ -7,6 +7,7 @@ A personal collection of AI agent configurations, prompts, and automation tools 
 ```
 ai-toolkit/
 ├── cursor-commands/     # Cursor AI slash commands
+├── cursor-skills/       # Cursor AI agent skills
 ├── openclaw/            # OpenClaw Docker setup docs
 └── ...                  # More to come
 ```
@@ -57,6 +58,19 @@ OC_PASSWORD=...
 Full health check of the local OpenClaw Docker setup: containers, gateway, device pairing, Telegram, Claude proxy, and Google OAuth tokens. Auto-fixes common issues.
 
 **Usage:** `/openclaw-doctor`
+
+---
+
+## 🤖 Cursor Skills
+
+Agent skills stored in `cursor-skills/`.
+
+### Available Skills
+
+| Skill | Description |
+|-------|-------------|
+| `jira-implement` | Jira-to-implementation orchestrator — takes a Jira URL or issue key and drives end-to-end implementation through PR creation and review handling |
+| `pr-description-write` | Drafts a review-ready PR/MR description from the branch diff — detects the repo's PR template and maps substance into it, or falls back to a minimal Why / What changed / Verification skeleton; never fabricates evidence |
 
 ---
 
