@@ -23,9 +23,9 @@ Draft PR/MR bodies that give a reviewer — who has seen neither the branch nor 
 
 ### 2. Detect repo conventions
 
-Search in this order (first hit wins):
+Search in this order (first hit wins). The template is authoritative — never draft until this search has run:
 
-1. **PR template**: `.github/PULL_REQUEST_TEMPLATE.md`, `.github/PULL_REQUEST_TEMPLATE/*.md`, root and `docs/` variants (case-insensitive); GitLab: `.gitlab/merge_request_templates/*.md`; Gitea: `.gitea/`
+1. **PR template** — search the working tree; if not found locally, check the repo's default branch (`gh api repos/{owner}/{repo}/contents/<path>` / `glab api`): `.github/PULL_REQUEST_TEMPLATE.md`, `.github/PULL_REQUEST_TEMPLATE/*.md`, root and `docs/` variants (case-insensitive); GitLab: `.gitlab/merge_request_templates/*.md`; Gitea: `.gitea/`. When the template directory holds multiple templates, pick the one matching the change type — or ask the user
 2. **PR rules** in `CONTRIBUTING.md` (required sections, checklist expectations, title formats)
 3. **Forge** from the remote URL → `gh` (GitHub) or `glab` (GitLab)
 
@@ -33,7 +33,7 @@ Close/tracker syntax: GitHub issue → `Fixes #123`; GitLab issue → `Closes #1
 
 ### 3. Draft
 
-**Template exists** — keep its headings, checkboxes, and order; map substance into them:
+**Template exists** — keep its headings, checkboxes, and order; map substance into them. Drop the template's instruction comments (HTML comments) from the final body:
 
 | Substance | Common template headings |
 | --- | --- |
